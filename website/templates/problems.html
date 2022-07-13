@@ -26,15 +26,15 @@
         <table class="table table-bordered sortable fixed" id="problems">
             <col style="width: 15%;"/>
             <tr>
-                <th>Contest</th>
-                <th colspan="4">Name</th>
+                <th style="user-select:none;">Contest</th>
+                <th colspan="4" style="user-select:none;">Name</th>
             </tr>
             {% for year in range(2025, 2011, -1) %}
                 {% for month in ['December', 'November', 'US Open', 'March', 'February', 'January'] %}
                     {% for div in ['Bronze', 'Silver', 'Gold', 'Platinum'] %}
                         <tr>
                             {% if user.get_problems(year, month, div)|length > 0 %}
-                                <th class="bg-light">{{ year }} {{ month }}</th>
+                                <th class="bg-light" style="user-select:none;">{{ year }} {{ month }}</th>
                                 <td>{{ div }}</td>
                                 {% for problem in user.get_problems(year, month, div) %}
                                     <td id="{{ problem.pid }}" class="{% if user.get_status(problem.pid).progress %}{{ user.get_status(problem.pid).progress }}{% else %}Unattempted{% endif %}">
