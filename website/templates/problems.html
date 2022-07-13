@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Problems{% endblock %}
 {% block head %}
-    <script src="../static/sorttable.js"></script>
 {% endblock %}
 {% block content %}
     <br/>
@@ -28,14 +27,14 @@
             <col style="width: 15%;"/>
             <tr>
                 <th>Contest</th>
-                <th colspan="4" class="sorttable_nosort">Name</th>
+                <th colspan="4">Name</th>
             </tr>
             {% for year in range(2025, 2011, -1) %}
                 {% for month in ['December', 'November', 'US Open', 'March', 'February', 'January'] %}
                     {% for div in ['Bronze', 'Silver', 'Gold', 'Platinum'] %}
                         <tr>
                             {% if user.get_problems(year, month, div)|length > 0 %}
-                                <th class="bg-light" sorttable_customkey="{{ user.get_problems(year, month, div)[0].pid }}">{{ year }} {{ month }}</th>
+                                <th class="bg-light">{{ year }} {{ month }}</th>
                                 <td>{{ div }}</td>
                                 {% for problem in user.get_problems(year, month, div) %}
                                     <td id="{{ problem.pid }}" class="{% if user.get_status(problem.pid).progress %}{{ user.get_status(problem.pid).progress }}{% else %}Unattempted{% endif %}">
