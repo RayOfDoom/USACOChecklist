@@ -1,0 +1,19 @@
+.wrapper {
+    overflow-x: auto;
+}
+
+.wrapper table {
+    white-space: nowrap;
+}
+
+td.Completed {
+    background-color: #c3e6cb;
+}
+
+td.Solved {
+    background-color: #bee5eb;
+}
+
+td.Attempted {
+    background-color: #ffeeba;
+}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Problems{% endblock %}
+{% block head %}
+    <script src="../static/sorttable.js"></script>
+{% endblock %}
+{% block content %}
+    <br/>
+    <h1 style="text-align:center;">Problems</h1>
+    <div class="row justify-content-start" style="margin-left: 0;margin-top: 30px;">
+        <div class="btn-group">
+            <button class="btn btn-secondary active" onclick="display(0)" id="b0">
+                Platinum
+            </button>
+            <button class="btn btn-secondary" onclick="display(1)" id="b1">
+                Gold
+            </button>
+            <button class="btn btn-secondary" onclick="display(2)" id="b2">
+                Silver
+            </button>
+            <button class="btn btn-secondary" onclick="display(3)" id="b3">
+                Bronze
+            </button>
+        </div>
+    </div>
+    <br/>
+    <div class="wrapper">
+        <table class="table table-bordered sortable fixed" id="problems">
+            <col style="width: 15%;"/>
+            <tr>
+                <th>Contest</th>
+                <th colspan="4" class="sorttable_nosort">Name</th>
+            </tr>
+            {% for year in range(2025, 2011, -1) %}
+                {% for month in ['December', 'November', 'US Open', 'March', 'February', 'January'] %}
+                    {% for div in ['Bronze', 'Silver', 'Gold', 'Platinum'] %}
+                        <tr>
+                            {% if user.get_problems(year, month, div)|length > 0 %}
+                                <th class="bg-light" sorttable_customkey="{{ user.get_problems(year, month, div)[0].pid }}">{{ year }} {{ month }}</th>
+                                <td>{{ div }}</td>
+                                {% for problem in user.get_problems(year, month, div) %}
+                                    <td id="{{ problem.pid }}" class="{% if user.get_status(problem.pid).progress %}{{ user.get_status(problem.pid).progress }}{% else %}Unattempted{% endif %}">
+                                        <a href="{{ problem.get_link() }}" onclick="event.stopPropagation()">{{ problem.name }}</a></td>
+                                {% endfor %}
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>display(0)</script>
+{% endblock %}
