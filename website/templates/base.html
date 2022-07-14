@@ -16,7 +16,7 @@
     />
     <link rel="stylesheet" href="../static/index.css">
     <title>{% block title %}Home{% endblock %}</title>
-    {% block head %}{% endblock %}
+    {% block headscripts %}{% endblock %}
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -102,6 +102,6 @@
         type="text/javascript"
         src="{{ url_for('static', filename='index.js') }}"
 ></script>
-{% block scripts %} {% endblock %}
+{% block tailscripts %} {% endblock %}
 </body>
 </html>

@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Problems{% endblock %}
-{% block head %}
+{% block headscripts %}
+    <script type="text/javascript">
+        var problemlist = JSON.parse({{ problems|tojson }});
+        var checklist = JSON.parse({{ checklist|tojson }})
+    </script>
 {% endblock %}
 {% block content %}
     <br/>
@@ -29,25 +33,11 @@
                 <th style="user-select:none;">Contest</th>
                 <th colspan="4" style="user-select:none;">Name</th>
             </tr>
-            {% for year in range(2025, 2011, -1) %}
-                {% for month in ['December', 'November', 'US Open', 'March', 'February', 'January'] %}
-                    {% for div in ['Bronze', 'Silver', 'Gold', 'Platinum'] %}
-                        <tr>
-                            {% if user.get_problems(year, month, div)|length > 0 %}
-                                <th class="bg-light" style="user-select:none;">{{ year }} {{ month }}</th>
-                                <td>{{ div }}</td>
-                                {% for problem in user.get_problems(year, month, div) %}
-                                    <td id="{{ problem.pid }}" class="{% if user.get_status(problem.pid).progress %}{{ user.get_status(problem.pid).progress }}{% else %}Unattempted{% endif %}">
-                                        <a href="{{ problem.get_link() }}" style="user-select:none;" onclick="event.stopPropagation()">{{ problem.name }}</a></td>
-                                {% endfor %}
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
-                {% endfor %}
-            {% endfor %}
+            <tbody class="problemlist"></tbody>
         </table>
     </div>
 {% endblock %}
-{% block scripts %}
+{% block tailscripts %}
     <script>display(0)</script>
 {% endblock %}
+

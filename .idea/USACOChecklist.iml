@@ -13,6 +13,14 @@
     <orderEntry type="library" name="popper.js" level="application" />
   </component>
   <component name="TemplatesService">
+    <option name="templateFileTypes">
+      <list>
+        <option value="HTML" />
+        <option value="JavaScript" />
+        <option value="XHTML" />
+        <option value="XML" />
+      </list>
+    </option>
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
     <option name="TEMPLATE_FOLDERS">
       <list>

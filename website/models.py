@@ -9,9 +9,6 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(150))
     checklist = db.relationship("ChecklistEntry", lazy='dynamic')
 
-    def get_problems(self, year, month, div):
-        return Problem.query.filter_by(year=year, month=month, div=div).all()
-
     def get_status(self, pid):
         return self.checklist.filter_by(pid=pid).first()
 
@@ -22,6 +19,9 @@ class ChecklistEntry(db.Model):
     date = db.Column(db.DateTime)
     progress = db.Column(db.String(10))
 
+    def as_dict(self):
+        return {c.name: str(getattr(self, c.name)) for c in self.__table__.columns}
+
 
 class Problem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -31,5 +31,5 @@ class Problem(db.Model):
     div = db.Column(db.String(10))
     name = db.Column(db.String(50))
 
-    def get_link(self):
-        return 'http://www.usaco.org/index.php?page=viewproblem2&cpid=' + str(self.pid)
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

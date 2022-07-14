@@ -3,7 +3,7 @@ from datetime import date
 from flask import Blueprint, render_template, request, flash, jsonify
 from flask_login import login_required, current_user
 from . import db
-from .models import ChecklistEntry
+from .models import ChecklistEntry, Problem
 
 views = Blueprint('views', __name__)
 
@@ -16,7 +16,13 @@ def home():
 @views.route('/problems')
 @login_required
 def problems():
-    return render_template("problems.html", user=current_user)
+    problemlist = []
+    for problem in Problem.query.order_by(Problem.pid.desc()).all():
+        problemlist.append(problem.as_dict())
+    checklist = []
+    for entry in current_user.checklist.all():
+        checklist.append(entry.as_dict())
+    return render_template("problems.html", user=current_user, problems=json.dumps(problemlist), checklist=json.dumps(checklist))
 
 
 @views.route('/update_problems/<string:probleminfo>', methods=['POST'])
