@@ -47,7 +47,7 @@ def login():
         elif not check_password_hash(user.password, password):
             flash('Incorrect password, try again.', category='error')
         else:
-            user_extras = user.extras;
+            user_extras = UserExtras.query.filter_by(id=user.id).first()
             if not user_extras:
                 add_user_extras(user)
 
