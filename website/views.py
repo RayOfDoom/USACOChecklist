@@ -54,4 +54,4 @@ def share(userhash):
     checklist = []
     for entry in user.checklist.all():
         checklist.append(entry.as_dict())
-    return render_template("view_list.html", user=user, problems=json.dumps(problemlist), checklist=json.dumps(checklist))
+    return render_template("view_list.html", user=current_user, list_author=user, problems=json.dumps(problemlist), checklist=json.dumps(checklist))
