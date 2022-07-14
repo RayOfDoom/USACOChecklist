@@ -4,27 +4,12 @@
     <script type="text/javascript">
         var problemlist = JSON.parse({{ problems|tojson }});
         var checklist = JSON.parse({{ checklist|tojson }})
-        var allowEditing = true;
+        var allowEditing = false;
     </script>
 {% endblock %}
 {% block content %}
     <br/>
-    <h1 style="text-align:center;">Problems</h1>
-    <br/>
-
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <a href="/view/{{ user.extras.unique_key }}">
-                <button class="btn btn-outline-secondary" type="button" style="border-top-right-radius: 0;border-bottom-right-radius: 0;">View</button>
-            </a>
-        </div>
-        <input type="text" class="form-control" readonly="" id="static-link" aria-describedby="what" value="usacochecklist.pythonanywhere.com/view/{{ user.extras.unique_key }}">
-        <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button" onclick="copylink()">Copy</button>
-        </div>
-    </div>
-    <small>&nbsp;&nbsp;Use the above link to share a static version of your checklist.</small>
-
+    <h1 style="text-align:center;">{{ user.username }}'s Checklist</h1>
     <div class="row justify-content-start" style="margin-left: 0;margin-top: 30px;">
         <div class="btn-group">
             <button class="btn btn-secondary active" onclick="display(0)" id="b0">
@@ -42,7 +27,6 @@
         </div>
     </div>
     <br/>
-
     <div class="wrapper">
         <table class="table table-bordered sortable fixed" id="problems">
             <col style="width: 15%;"/>
@@ -53,7 +37,6 @@
             <tbody class="problemlist"></tbody>
         </table>
     </div>
-
 {% endblock %}
 {% block tailscripts %}
     <script>display(0)</script>

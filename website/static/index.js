@@ -1,5 +1,15 @@
 var curD = 0;
 
+window.addEventListener("pageshow", function (event) {
+    var historyTraversal = event.persisted ||
+        (typeof window.performance != "undefined" &&
+            window.performance.navigation.type === 2);
+    if (historyTraversal) {
+        // Handle page restore.
+        window.location.reload();
+    }
+});
+
 function display(type) {
     $("#b" + curD).removeClass("active");
     $("#b" + type).addClass("active");
@@ -11,10 +21,7 @@ function display(type) {
     p.append('<th class="bg-light" style="user-select:none;">' + problemlist[0]["year"] + ' ' + problemlist[0]["month"] + '</th>');
     for (var i = 0; i < problemlist.length; i++) {
         var problem = problemlist[i];
-        if (curD === 0 && problem["div"] !== "Platinum") continue;
-        if (curD === 1 && problem["div"] !== "Gold") continue;
-        if (curD === 2 && problem["div"] !== "Silver") continue;
-        if (curD === 3 && problem["div"] !== "Bronze") continue;
+        if (div2int(problem["div"]) !== curD) continue;
         if (problem["year"] !== prevyear || problem["month"] !== prevmonth) {
             p.append('</tr>')
             p.append('<tr>');
@@ -34,8 +41,8 @@ function display(type) {
     }
 }
 
-
 function updateStatus(problemCell) {
+    if (!allowEditing) return;
     var cur = problemCell.classList.toString()
     problemCell.classList.remove(cur);
     if (cur === "Unattempted") problemCell.classList.add("Attempted");
@@ -49,4 +56,17 @@ function updateStatus(problemCell) {
     data.status = problemCell.classList[0];
     request.open('POST', `/update_problems/${JSON.stringify(data)}`);
     request.send();
+}
+
+function div2int(div) {
+    if (div === "Bronze") return 3;
+    if (div === "Silver") return 2;
+    if (div === "Gold") return 1;
+    return 0;
+}
+
+function copylink() {
+    var text = document.getElementById("static-link");
+    text.select();
+    document.execCommand("copy");
 }

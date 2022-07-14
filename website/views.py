@@ -1,9 +1,9 @@
 import json
 from datetime import date
-from flask import Blueprint, render_template, request, flash, jsonify
+from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, current_user
 from . import db
-from .models import ChecklistEntry, Problem
+from .models import ChecklistEntry, Problem, User, UserExtras
 
 views = Blueprint('views', __name__)
 
@@ -41,3 +41,17 @@ def update_problems(probleminfo):
         db.session.add(newentry)
     db.session.commit()
     return ("/")
+
+
+@views.route('/view/<string:userhash>')
+def share(userhash):
+    user = User.query.filter_by(id=UserExtras.query.filter_by(unique_key=userhash).first().id).first()
+    if not user:
+        return redirect(url_for(views.home))
+    problemlist = []
+    for problem in Problem.query.order_by(Problem.pid.desc()).all():
+        problemlist.append(problem.as_dict())
+    checklist = []
+    for entry in user.checklist.all():
+        checklist.append(entry.as_dict())
+    return render_template("view_list.html", user=user, problems=json.dumps(problemlist), checklist=json.dumps(checklist))

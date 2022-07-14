@@ -8,9 +8,16 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
     checklist = db.relationship("ChecklistEntry", lazy='dynamic')
+    extras = db.relationship("UserExtras", uselist=False)
 
     def get_status(self, pid):
         return self.checklist.filter_by(pid=pid).first()
+
+
+class UserExtras(db.Model):
+    id = db.Column(db.ForeignKey("user.id"), primary_key=True)
+    unique_key = db.Column(db.String(150))
+    diff_pref = db.Column(db.Integer)
 
 
 class ChecklistEntry(db.Model):

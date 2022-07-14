@@ -1,5 +1,7 @@
+import uuid
+
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import User
+from .models import User, UserExtras
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
@@ -45,6 +47,10 @@ def login():
         elif not check_password_hash(user.password, password):
             flash('Incorrect password, try again.', category='error')
         else:
+            user_extras = user.extras;
+            if not user_extras:
+                add_user_extras(user)
+
             flash('Logged in successfully!', category='success')
             login_user(user, remember=True)
             return redirect(url_for('views.home'))
@@ -81,8 +87,15 @@ def sign_up():
                 password1, method='sha256'))
             db.session.add(new_user)
             db.session.commit()
+            add_user_extras(new_user)
             login_user(new_user, remember=True)
             flash('Account created!', category='success')
             return redirect(url_for('views.home'))
 
     return render_template("sign_up.html", user=current_user)
+
+
+def add_user_extras(user):
+    user_extra = UserExtras(id=user.id, unique_key=str(uuid.uuid4()).replace('-', ''), diff_pref=0)
+    db.session.add(user_extra)
+    db.session.commit()
