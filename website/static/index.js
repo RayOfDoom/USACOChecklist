@@ -1,5 +1,3 @@
-var curD = 0;
-
 window.addEventListener("pageshow", function (event) {
     var historyTraversal = event.persisted ||
         (typeof window.performance != "undefined" &&
@@ -10,34 +8,36 @@ window.addEventListener("pageshow", function (event) {
     }
 });
 
+var curD = 0;
+
 function display(type) {
     $("#b" + curD).removeClass("active");
     $("#b" + type).addClass("active");
     curD = type;
     var p = $(".problemlist");
     p.empty();
-    var prevyear = problemlist[0]["year"], prevmonth = problemlist[0]["month"];
-    p.append('<tr>')
-    p.append('<th class="bg-light" style="user-select:none;">' + problemlist[0]["year"] + ' ' + problemlist[0]["month"] + '</th>');
     for (var i = 0; i < problemlist.length; i++) {
         var problem = problemlist[i];
         if (div2int(problem["div"]) !== curD) continue;
-        if (problem["year"] !== prevyear || problem["month"] !== prevmonth) {
-            p.append('</tr>')
-            p.append('<tr>');
-            p.append('<th class="bg-light" style="user-select:none;">' + problem["year"] + ' ' + problem["month"] + '</th>');
-        }
-        p.append('<td id="' + problem["pid"] + '" class="Unattempted" onclick="updateStatus(this)"><a href="http://www.usaco.org/index.php?page=viewproblem2&cpid=' + problem["pid"] + '" style="user-select:none;" onclick="event.stopPropagation()" target="_blank">' + problem["name"] + '</a></td>');
-        prevyear = problem["year"];
-        prevmonth = problem["month"];
+        p.append('<tr><th class="bg-light" style="user-select:none;">' + problem["year"] + ' ' + problem["month"] + '</th><td id="' +
+            problem["pid"] + '" class="Unattempted" onclick="updateStatus(this)"><div class="problem-container"><a href="http://www.usaco.org/index.php?page=viewproblem2&cpid=' +
+            problem["pid"] + '" style="user-select:none;" onclick="event.stopPropagation()" target="_blank">' + problem["name"] + '  </a>' +
+            '<div id="cases-' + problem["pid"] + '" class="case-info"></div></div></td></tr>');
     }
-    p.append('</tr>');
 
     for (var i = 0; i < checklist.length; i++) {
         var entry = checklist[i];
         var cell = $("#" + entry.pid);
         cell.removeClass("Unattempted");
         cell.addClass(entry.progress);
+    }
+
+    for (var i = 0; i < problemcases.length; i++) {
+        var pcase = problemcases[i];
+        var div = $("#cases-" + pcase.pid);
+        console.log()
+        if (pcase.correct) div.append('<div class="case case-correct" onclick="event.stopPropagation()"><div><a style="user-select:none;" target="_blank">' + pcase.symbol + '</a></div></div>')
+        else div.append('<div class="case case-incorrect" onclick="event.stopPropagation()"><div><a style="user-select:none;" target="_blank">' + pcase.symbol + '</a></div></div>')
     }
 }
 
@@ -50,11 +50,11 @@ function updateStatus(problemCell) {
     else if (cur === "Solved") problemCell.classList.add("Completed");
     else problemCell.classList.add("Unattempted")
 
-    const request = new XMLHttpRequest();
     var data = {};
     data.pid = problemCell.id;
     data.status = problemCell.classList[0];
-    request.open('POST', `/update_problems/${JSON.stringify(data)}`);
+    const request = new XMLHttpRequest();
+    request.open('POST', `/update-problem/${JSON.stringify(data)}`);
     request.send();
 }
 

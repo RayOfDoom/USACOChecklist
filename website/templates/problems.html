@@ -3,7 +3,8 @@
 {% block headscripts %}
     <script type="text/javascript">
         var problemlist = JSON.parse({{ problems|tojson }});
-        var checklist = JSON.parse({{ checklist|tojson }})
+        var checklist = JSON.parse({{ checklist|tojson }});
+        var problemcases = JSON.parse({{ problemcases|tojson }});
         var allowEditing = true;
     </script>
 {% endblock %}
@@ -43,16 +44,10 @@
     </div>
     <br/>
 
-    <div class="wrapper">
-        <table class="table table-bordered sortable fixed" id="problems">
-            <col style="width: 15%;"/>
-            <tr>
-                <th style="user-select:none;">Contest</th>
-                <th colspan="4" style="user-select:none;">Name</th>
-            </tr>
-            <tbody class="problemlist"></tbody>
-        </table>
-    </div>
+    <table class="table table-bordered" id="problems">
+        <col style="width: 15%;"/>
+        <tbody class="problemlist"></tbody>
+    </table>
 
 {% endblock %}
 {% block tailscripts %}

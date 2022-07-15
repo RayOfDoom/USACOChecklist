@@ -40,6 +40,7 @@
                         <i class="fa fa-user"></i>&nbsp;{{ user.username }}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="/sync-usaco"><i class="fa fa-refresh"></i>&nbsp;Sync USACO Data</a>
                         <a class="dropdown-item" href="/change-password"><i class="fa fa-edit"></i>&nbsp;Change Password</a>
                         <a class="dropdown-item" href="/logout"><i class="fa fa-sign-out"></i>&nbsp;Log Out</a>
                     </div>
@@ -98,6 +99,17 @@
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"
 ></script>
+<script
+        src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+        integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+        crossorigin="anonymous"
+></script>
+<script type="text/javascript" charset="utf-8">
+    var socket = io();
+    socket.on('connect', function () {
+        socket.emit('sync progress', {data: 'I\'m connected!'});
+    });
+</script>
 <script
         type="text/javascript"
         src="{{ url_for('static', filename='index.js') }}"
