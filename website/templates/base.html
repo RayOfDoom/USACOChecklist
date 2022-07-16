@@ -105,6 +105,15 @@
         crossorigin="anonymous"
 ></script>
 <script type="text/javascript" charset="utf-8">
+    const io = require('socket.io')(server, {
+        cors: {
+            origin: "http://49.234.36.140/socket.io/",
+            methods: ["GET", "POST"],
+            transports: ['websocket', 'polling'],
+            credentials: true
+        },
+        allowEIO3: true
+    });
     var socket = io();
     socket.on('connect', function () {
         socket.emit('connect debug', {data: 'I\'m connected!'});
