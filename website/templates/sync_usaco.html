@@ -3,12 +3,13 @@
 {% block headscripts %}
     <script type="text/javascript">
         var userUUID = '{{ user_uuid }}';
+
     </script>
 {% endblock %}
 {% block content %}
-    <form method="POST">
-        <br/>
-        <h1 align="center">Sync USACO Data</h1>
+    <br/>
+    <h1 align="center">Sync USACO Data</h1>
+    <form onsubmit="return false">
         <div class="form-group">
             <label for="uname">USACO Username</label>
             <input
@@ -30,28 +31,30 @@
             />
         </div>
         <br/>
-        <button type="submit" class="btn btn-primary">Sync</button>
-        <br>
-        <br>
-        <h5>Progress</h5>
-        <div class="progress progress-striped active">
-            <div id="sync-progress" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-                <span class="sr-only"></span>
-            </div>
-        </div>
-        <div style="display:flex; justify-content: space-between;"><small id="sync-message">&nbsp;&nbsp;Note that this process may take a while. Your information is not stored in any
-            way.</small><small>You may navigate to other tabs while you
-            wait.&nbsp;&nbsp;</small></div>
-
+        <button type="submit" onclick="updateData()" class="btn btn-primary">Sync</button>
     </form>
+    <br/>
+    <h5>Progress</h5>
+    <div class="progress">
+        <div id="sync-progress" class="progress-bar progress-bar-striped dummy-class" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+            <span class="sr-only"></span>
+        </div>
+    </div>
+    <div style="display:flex; justify-content: space-between;">
+        <small id="sync-message">&nbsp;&nbsp;Note that this process may take a while. Your information is not stored in any way.</small>
+        <small>You may navigate to other tabs while you wait.&nbsp;&nbsp;</small>
+    </div>
 
 {% endblock %}
 {% block tailscripts %}
     <script type="text/javascript">
         socket.on(userUUID, function (data) {
-            var jsonData = JSON.parse(JSON.stringify(data))
-            $("#sync-progress").css({width: jsonData['progress'] + '%'});
-            $("#sync-message").text(jsonData['message'])
+            var jsonData = JSON.parse(JSON.stringify(data));
+            var bar = $("#sync-progress")
+            bar.css({width: jsonData['progress'] + '%'});
+            bar.removeClass(bar.attr('class').split(' ').pop())
+            bar.addClass(jsonData['type'])
+            $("#sync-message").text(jsonData['message']);
         });
     </script>
 {% endblock %}

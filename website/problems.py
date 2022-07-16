@@ -3,6 +3,7 @@ import random
 import time, json, threading
 
 from main import socketio
+from flask_socketio import emit
 from . import db, app
 from flask import Blueprint, request, render_template, flash, redirect, url_for, make_response
 from flask_login import login_required, current_user
@@ -32,10 +33,10 @@ syncing_threads = {}
 
 # https://stackoverflow.com/questions/24251898/flask-app-update-progress-bar-while-function-runs
 class SyncingThread(threading.Thread):
-    def __init__(self, id, uname, password):
+    def __init__(self, uname, password):
         self.uname = uname
         self.password = password
-        self.progress = 0
+        self.progress = 5
         self.app = app.app_context()
         self.id = copy.copy(current_user.id)
         self.uuid = str(copy.copy(current_user.extras.unique_key))
@@ -43,7 +44,7 @@ class SyncingThread(threading.Thread):
 
     def run(self):
         with self.app:
-            socketio.emit(self.uuid, {'progress': self.progress, 'message': 'Logging in...'}, json=True)
+            socketio.emit(self.uuid, {'progress': self.progress, 'message': 'Logging in...', 'type': 'progress-bar-animated'}, json=True)
             driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
             driver.get('http://www.usaco.org/index.php')
             driver.find_element(By.XPATH, '//*[@id="login"]/div[2]/input').send_keys(self.uname)
@@ -55,7 +56,7 @@ class SyncingThread(threading.Thread):
             try:
                 driver.find_element(By.XPATH, '//*[@id="login"]')
                 driver.quit()
-                socketio.emit(self.uuid, {'progress': 0, 'message': 'Incorrect login credentials. Try again.'}, json=True)
+                socketio.emit(self.uuid, {'progress': self.progress, 'message': 'Incorrect login credentials. Try again.', 'type': 'bg-danger'}, json=True)
                 return
             except NoSuchElementException:
                 pass
@@ -69,7 +70,7 @@ class SyncingThread(threading.Thread):
             for problem in problem_list:
                 self.progress = 10 + ((problem_cnt / problem_total) * 90)
                 problem_cnt += 1
-                socketio.emit(self.uuid, {'progress': self.progress, 'message': 'Fetching ' + problem.name}, json=True)
+                socketio.emit(self.uuid, {'progress': self.progress, 'message': 'Fetching ' + problem.name, 'type': 'progress-bar-animated'}, json=True)
 
                 url = 'http://www.usaco.org/index.php?page=viewproblem2&cpid=' + str(problem.pid)
                 driver.get(url)
@@ -80,13 +81,14 @@ class SyncingThread(threading.Thread):
                 try:
                     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="trial-information"]/a[1]')))
                 except TimeoutException:
+                    # incorrect sample case
                     continue
 
                 cases = driver.find_elements(By.XPATH, '//*[@id="trial-information"]/a')
 
                 checklist_entry = User.query.filter_by(id=self.id).first().checklist.filter_by(pid=problem.pid).first()
                 if not checklist_entry:
-                    checklist_entry = ChecklistEntry(user_id=self.id, pid=problem.pid, date=date.today(), progress="Attempted")
+                    checklist_entry = ChecklistEntry(user_id=self.id, pid=problem.pid, date=date.today(), progress="attempted")
                     db.session.add(checklist_entry)
                     db.session.commit()
 
@@ -110,28 +112,31 @@ class SyncingThread(threading.Thread):
 
                     case_cnt += 1
                 if is_all_correct:
-                    checklist_entry.progress = "Completed"
+                    checklist_entry.progress = "completed"
 
             db.session.commit()
         driver.quit()
-        socketio.emit(self.uuid, {'progress': self.progress, 'message': 'Completed.'}, json=True)
+        socketio.emit(self.uuid, {'progress': self.progress, 'message': 'Completed.', 'type': 'bg-success'}, json=True)
 
 
-@problems.route('/sync-usaco', methods=['GET', 'POST'])
+@problems.route('/sync-usaco')
 @login_required
-def connect_usaco():
-    if request.method == 'POST':
-        global syncing_threads
-        socketio.emit(current_user.extras.unique_key, {'progress': 0, 'message': 'Initializing...'}, json=True)
-
-        uname = request.form.get('uname')
-        password = request.form.get('password')
-
-        thread_id = random.randint(0, 10000)
-        syncing_threads[thread_id] = SyncingThread(current_user.id, uname, password)
-        syncing_threads[thread_id].start()
-
+def sync_usaco():
     return render_template("sync_usaco.html", user=current_user, user_uuid=current_user.extras.unique_key)
+
+
+@problems.route('/update-data', methods=['POST'])
+@login_required
+def update_data():
+    global syncing_threads
+
+    uname = request.form.get('uname')
+    password = request.form.get('password')
+
+    thread_id = random.randint(0, 10000)
+    syncing_threads[thread_id] = SyncingThread(uname, password)
+    syncing_threads[thread_id].start()
+    return ("/")
 
 
 @problems.route('/update-problem/<string:probleminfo>', methods=['POST'])
@@ -150,3 +155,8 @@ def update_problems(probleminfo):
         db.session.add(newentry)
     db.session.commit()
     return ("/")
+
+
+@socketio.on('connect debug')
+def debug(data):
+    pass

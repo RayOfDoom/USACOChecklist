@@ -1,12 +1,12 @@
-td.Completed {
+td.completed {
     background-color: #c3e6cb;
 }
 
-td.Solved {
+td.solved {
     background-color: #bee5eb;
 }
 
-td.Attempted {
+td.attempted {
     background-color: #ffeeba;
 }
 

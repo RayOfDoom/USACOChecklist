@@ -107,7 +107,7 @@
 <script type="text/javascript" charset="utf-8">
     var socket = io();
     socket.on('connect', function () {
-        socket.emit('sync progress', {data: 'I\'m connected!'});
+        socket.emit('connect debug', {data: 'I\'m connected!'});
     });
 </script>
 <script

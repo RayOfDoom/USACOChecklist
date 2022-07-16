@@ -20,7 +20,7 @@ function display(type) {
         var problem = problemlist[i];
         if (div2int(problem["div"]) !== curD) continue;
         p.append('<tr><th class="bg-light" style="user-select:none;">' + problem["year"] + ' ' + problem["month"] + '</th><td id="' +
-            problem["pid"] + '" class="Unattempted" onclick="updateStatus(this)"><div class="problem-container"><a href="http://www.usaco.org/index.php?page=viewproblem2&cpid=' +
+            problem["pid"] + '" class="unattempted" onclick="updateStatus(this)"><div class="problem-container"><a href="http://www.usaco.org/index.php?page=viewproblem2&cpid=' +
             problem["pid"] + '" style="user-select:none;" onclick="event.stopPropagation()" target="_blank">' + problem["name"] + '  </a>' +
             '<div id="cases-' + problem["pid"] + '" class="case-info"></div></div></td></tr>');
     }
@@ -28,7 +28,7 @@ function display(type) {
     for (var i = 0; i < checklist.length; i++) {
         var entry = checklist[i];
         var cell = $("#" + entry.pid);
-        cell.removeClass("Unattempted");
+        cell.removeClass("unattempted");
         cell.addClass(entry.progress);
     }
 
@@ -45,10 +45,10 @@ function updateStatus(problemCell) {
     if (!allowEditing) return;
     var cur = problemCell.classList.toString()
     problemCell.classList.remove(cur);
-    if (cur === "Unattempted") problemCell.classList.add("Attempted");
-    else if (cur === "Attempted") problemCell.classList.add("Solved");
-    else if (cur === "Solved") problemCell.classList.add("Completed");
-    else problemCell.classList.add("Unattempted")
+    if (cur === "unattempted") problemCell.classList.add("attempted");
+    else if (cur === "attempted") problemCell.classList.add("solved");
+    else if (cur === "solved") problemCell.classList.add("completed");
+    else problemCell.classList.add("unattempted")
 
     var data = {};
     data.pid = problemCell.id;
@@ -57,6 +57,17 @@ function updateStatus(problemCell) {
     request.open('POST', `/update-problem/${JSON.stringify(data)}`);
     request.send();
 }
+
+function updateData() {
+    var data = new FormData();
+    data.append('uname', $("#uname").val());
+    data.append('password', $("#password").val());
+
+    const request = new XMLHttpRequest();
+    request.open('POST', `/update-data`);
+    request.send(data);
+}
+
 
 function div2int(div) {
     if (div === "Bronze") return 3;
