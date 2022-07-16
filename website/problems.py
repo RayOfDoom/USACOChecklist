@@ -2,9 +2,7 @@ import copy
 import random
 import time, json, threading
 
-from main import socketio
-from flask_socketio import emit
-from . import db, app
+from . import db, app, socketio
 from flask import Blueprint, request, render_template, flash, redirect, url_for, make_response
 from flask_login import login_required, current_user
 from .models import ChecklistEntry, ProblemCase, Problem, User
